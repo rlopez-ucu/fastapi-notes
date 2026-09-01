@@ -16,7 +16,7 @@ jobs:
         run: docker run -d --name notes -p 8000:8000 notes-api:${{ github.sha }}
 
       - name: Wait for the container to answer
-        run: curl --retry 10 --retry-delay 1 --retry-connrefused -sf http://localhost:8000/
+        run: curl --retry 10 --retry-delay 1 --retry-all-errors -sf http://localhost:8000/
 
       - name: Add and list a note through the container
         run: |
