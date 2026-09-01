@@ -1,0 +1,6 @@
+docker build -t notes-api .
+docker run -d -p 8000:8000 -v notes_data:/data notes-api
+
+curl http://localhost:8000/
+curl http://localhost:8000/add/my-note
+curl http://localhost:8000/list
