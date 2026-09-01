@@ -1,0 +1,33 @@
+name: 03 Jobs and Steps
+
+on:
+  push:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: First step
+        run: echo "Building"
+      - name: Second step
+        run: echo "Still building"
+
+  test:
+    runs-on: ubuntu-latest
+    needs: build
+    steps:
+      - name: Run after build
+        run: echo "Testing"
+
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Run in parallel with build
+        run: echo "Linting"
+
+  deploy:
+    runs-on: ubuntu-latest
+    needs: [test, lint]
+    steps:
+      - name: Run after test and lint
+        run: echo "Deploying"

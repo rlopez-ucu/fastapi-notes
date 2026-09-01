@@ -1,0 +1,48 @@
+name: 06 Environment Variables and Contexts
+
+on:
+  push:
+
+env:
+  APP_NAME: notes-api
+  LEVEL: workflow
+
+jobs:
+  show-values:
+    runs-on: ubuntu-latest
+    env:
+      LEVEL: job
+    steps:
+      - name: Workflow level variable
+        run: echo "APP_NAME is $APP_NAME"
+
+      - name: Job level overrides workflow level
+        run: echo "LEVEL is $LEVEL"
+
+      - name: Step level overrides job level
+        env:
+          LEVEL: step
+        run: echo "LEVEL is $LEVEL"
+
+      - name: Set a variable for later steps
+        run: echo "GREETING=hello" >> "$GITHUB_ENV"
+
+      - name: Read the variable set earlier
+        run: echo "GREETING is $GREETING"
+
+      - name: Values from the github context
+        run: |
+          echo "Repository: ${{ github.repository }}"
+          echo "Actor: ${{ github.actor }}"
+          echo "SHA: ${{ github.sha }}"
+          echo "Run number: ${{ github.run_number }}"
+
+      - name: Values from the runner context
+        run: |
+          echo "OS: ${{ runner.os }}"
+          echo "Temp dir: ${{ runner.temp }}"
+
+      - name: Secrets are masked in logs
+        run: echo "Token length is ${#TOKEN}"
+        env:
+          TOKEN: ${{ secrets.GITHUB_TOKEN }}

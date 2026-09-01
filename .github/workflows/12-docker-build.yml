@@ -1,0 +1,32 @@
+name: 12 Docker Build and Run
+
+on:
+  push:
+
+jobs:
+  docker:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Build the image
+        run: docker build -t notes-api:${{ github.sha }} .
+
+      - name: Run the container
+        run: docker run -d --name notes -p 8000:8000 notes-api:${{ github.sha }}
+
+      - name: Wait for the container to answer
+        run: curl --retry 10 --retry-delay 1 --retry-connrefused -sf http://localhost:8000/
+
+      - name: Add and list a note through the container
+        run: |
+          curl -sf http://localhost:8000/add/hello-from-docker
+          curl -sf http://localhost:8000/list | grep hello-from-docker
+
+      - name: Show container logs
+        if: always()
+        run: docker logs notes
+
+      - name: Stop the container
+        if: always()
+        run: docker rm -f notes

@@ -1,0 +1,40 @@
+name: 07 Conditionals
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  conditions:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Only on the main branch
+        if: github.ref == 'refs/heads/main'
+        run: echo "This is main"
+
+      - name: Only on other branches
+        if: github.ref != 'refs/heads/main'
+        run: echo "This is not main"
+
+      - name: Only on pull requests
+        if: github.event_name == 'pull_request'
+        run: echo "This is a pull request"
+
+      - name: This step fails but the job continues
+        continue-on-error: true
+        run: exit 1
+
+      - name: Runs only if everything before succeeded
+        if: success()
+        run: echo "All good so far"
+
+      - name: Runs even if a previous step failed
+        if: always()
+        run: echo "Always runs"
+
+  only-on-main:
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main'
+    steps:
+      - name: Whole job gated by a condition
+        run: echo "Job ran because we are on main"

@@ -1,0 +1,31 @@
+name: 13 Reusable Workflow
+
+on:
+  workflow_call:
+    inputs:
+      greeting:
+        type: string
+        required: true
+      python-version:
+        type: string
+        required: false
+        default: "3.12"
+    outputs:
+      message:
+        value: ${{ jobs.greet.outputs.message }}
+
+jobs:
+  greet:
+    runs-on: ubuntu-latest
+    outputs:
+      message: ${{ steps.build.outputs.message }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ inputs.python-version }}
+
+      - name: Build a message from the inputs
+        id: build
+        run: echo "message=${{ inputs.greeting }} from Python $(python --version)" >> "$GITHUB_OUTPUT"

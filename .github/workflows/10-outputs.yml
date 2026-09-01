@@ -1,0 +1,31 @@
+name: 10 Step and Job Outputs
+
+on:
+  push:
+
+jobs:
+  compute:
+    runs-on: ubuntu-latest
+    outputs:
+      version: ${{ steps.version.outputs.value }}
+      short-sha: ${{ steps.sha.outputs.value }}
+    steps:
+      - name: Compute a version string
+        id: version
+        run: echo "value=1.0.${{ github.run_number }}" >> "$GITHUB_OUTPUT"
+
+      - name: Compute a short SHA
+        id: sha
+        run: echo "value=${GITHUB_SHA::7}" >> "$GITHUB_OUTPUT"
+
+      - name: Use a step output in the same job
+        run: echo "Version is ${{ steps.version.outputs.value }}"
+
+  use:
+    runs-on: ubuntu-latest
+    needs: compute
+    steps:
+      - name: Use outputs from the previous job
+        run: |
+          echo "Version: ${{ needs.compute.outputs.version }}"
+          echo "Short SHA: ${{ needs.compute.outputs.short-sha }}"

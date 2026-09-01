@@ -1,0 +1,25 @@
+name: 04 Checkout and Setup Python
+
+on:
+  push:
+
+jobs:
+  import-app:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out the repository
+        uses: actions/checkout@v4
+
+      - name: List the checked out files
+        run: ls -la
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: Import the app
+        run: python -c "import app; print(app.app.title)"

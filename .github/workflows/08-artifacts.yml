@@ -1,0 +1,32 @@
+name: 08 Artifacts
+
+on:
+  push:
+
+jobs:
+  produce:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Create a file
+        run: |
+          mkdir -p out
+          echo "Built at $(date -u)" > out/report.txt
+
+      - name: Upload the file as an artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: report
+          path: out/
+
+  consume:
+    runs-on: ubuntu-latest
+    needs: produce
+    steps:
+      - name: Download the artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: report
+          path: downloaded/
+
+      - name: Read the file from the other job
+        run: cat downloaded/report.txt

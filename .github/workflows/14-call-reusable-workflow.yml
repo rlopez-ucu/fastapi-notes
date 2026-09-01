@@ -1,0 +1,18 @@
+name: 14 Call a Reusable Workflow
+
+on:
+  push:
+
+jobs:
+  call:
+    uses: ./.github/workflows/13-reusable-workflow.yml
+    with:
+      greeting: Hello
+      python-version: "3.11"
+
+  show-result:
+    runs-on: ubuntu-latest
+    needs: call
+    steps:
+      - name: Print the reusable workflow output
+        run: echo "${{ needs.call.outputs.message }}"

@@ -1,0 +1,30 @@
+name: 02 Triggers
+
+on:
+  push:
+    branches:
+      - main
+      - dev
+  pull_request:
+    branches:
+      - main
+  workflow_dispatch:
+    inputs:
+      who:
+        description: Name to greet
+        required: false
+        default: world
+  schedule:
+    - cron: "0 9 1 * *"
+
+jobs:
+  show-trigger:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Show which event started this run
+        run: echo "Triggered by ${{ github.event_name }}"
+      - name: Show the branch or ref
+        run: echo "Ref is ${{ github.ref }}"
+      - name: Greet the manual input
+        if: github.event_name == 'workflow_dispatch'
+        run: echo "Hello, ${{ inputs.who }}"

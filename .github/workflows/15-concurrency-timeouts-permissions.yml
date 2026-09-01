@@ -1,0 +1,31 @@
+name: 15 Concurrency, Timeouts and Permissions
+
+on:
+  push:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  guarded:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: A step with its own timeout
+        timeout-minutes: 1
+        run: echo "Finished well within the limit"
+
+      - name: A step that retries on failure with a shell loop
+        run: |
+          for attempt in 1 2 3; do
+            echo "Attempt $attempt" && break
+          done
+
+      - name: Read access works with the token
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: gh api repos/${{ github.repository }} --jq .full_name

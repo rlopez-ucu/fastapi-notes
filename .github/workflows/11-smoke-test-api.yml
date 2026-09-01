@@ -1,0 +1,37 @@
+name: 11 Run the API and Smoke Test
+
+on:
+  push:
+
+jobs:
+  smoke-test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: Create the data directory the app expects
+        run: sudo mkdir -p /data && sudo chown "$USER" /data
+
+      - name: Start the API in the background
+        run: nohup uvicorn app:app --host 127.0.0.1 --port 8000 > uvicorn.log 2>&1 &
+
+      - name: Wait for the API to answer
+        run: curl --retry 10 --retry-delay 1 --retry-connrefused -sf http://127.0.0.1:8000/
+
+      - name: Add a note
+        run: curl -sf http://127.0.0.1:8000/add/hello-from-actions
+
+      - name: List notes and check the note is there
+        run: curl -sf http://127.0.0.1:8000/list | grep hello-from-actions
+
+      - name: Show server logs
+        if: always()
+        run: cat uvicorn.log
